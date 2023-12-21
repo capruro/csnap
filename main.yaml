@@ -1,0 +1,56 @@
+- name: "CSNAP Playbook"
+  hosts: all
+  vars:
+    csnap_path: /opt/csnap/csnap
+    zip_file_path: /opt/csnap/archive
+    destination_path: ~/Documents/csnap
+  gather_facts: true
+  become: true
+
+  tasks:
+    - name: "Upload and Run csnap Script"
+      ansible.builtin.script:
+        cmd: "{% if 'AIX' not in ansible_os_family %}{{ playbook_dir }}/csnap.sh{% else %}{{ playbook_dir }}/csnap_aix.sh{% endif %} -q"
+      register: script_execution_result
+
+    - name: "Collect results date"
+      ansible.builtin.find:
+        paths: "{{ csnap_path }}"
+        patterns: "*.txt"
+        recurse: false
+      register: script_execution_date
+
+    - name: "Extract latest date from filenames"
+      ansible.builtin.set_fact:
+        latest_date: "{{ script_execution_date.files | map(attribute='path') | map('regex_replace', '.*\\.([0-9]+-[0-9]+-[0-9]+-[0-9]+-[0-9]+)\\..*$', '\\1') | list | max }}"
+
+    - name: "Debug latest date"
+      ansible.builtin.debug:
+        var: latest_date
+
+    - name: "Log Gathered Facts"
+      ansible.builtin.copy:
+        content: "{{ ansible_facts | to_nice_json }}"
+        dest: "{{ csnap_path }}/ansible-facts.{{ latest_date }}.{{ ansible_fqdn }}.txt"
+        mode: '0644'
+      become: false
+
+    - name: "Compress csnap"
+      ansible.builtin.script:
+        cmd: "{% if 'AIX' not in ansible_os_family %}{{ playbook_dir }}/csnap.sh{% else %}{{ playbook_dir }}/csnap_aix.sh{% endif %} -t"
+      register: compress_execution_result
+      changed_when: script_execution_result.changed or script_execution_result.stdout_lines is changed
+
+    - name: "Collect Resulting Files"
+      ansible.builtin.find:
+        paths: "{{ zip_file_path }}"
+        file_type: any
+      register: collected_files
+
+    - name: "Fetch Collected Files"
+      ansible.builtin.fetch:
+        src: "{{ item.path }}"
+        dest: "{{ destination_path }}/{{ inventory_hostname }}/{{ item.path | basename }}"
+        flat: true
+      with_items: "{{ collected_files.files }}"
+      when: item.path is defined
