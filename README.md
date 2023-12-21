@@ -33,6 +33,3 @@ To compare two snapshots, use the comparecsnap function in the script. Follow th
 ```
 ./csnap.sh -c
 ```
-
-## License
-This script is provided under the MIT License.
