@@ -1,0 +1,12 @@
+{
+    "snapshotsDir": "/opt/csnap/snapshots",
+    "rotateDir": "/path/to/rotate",
+    "DIR_LOG": "/opt/csnap/results",
+    "DIR_ZIP": "/opt/csnap/archive",
+    "BCK_FILE": "chkpath.bck",
+    "fmtFile": "2006-01-02-15-04.{{Hostname}}.txt",
+    "tempcsnapView": "/tmp/tempcsnapView",
+    "tempcsnapCompare": "/tmp/tempcsnapCompare",
+    "tempcsnapCompare1": "/tmp/tempcsnapCompare1",
+    "tempcsnapFailure": "/tmp/tempcsnapFailure"
+}  
