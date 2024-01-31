@@ -23,7 +23,7 @@ Run the script as a superuser (root) to capture the system configuration.
 To create a configuration snapshot, execute the following command:
 
 ```
-sudo ./csnap.sh backup
+sudo ./csnap.sh make
 ```
 This will generate detailed logs in the specified directories.
 
