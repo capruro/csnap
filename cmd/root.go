@@ -10,18 +10,28 @@ import (
 	"github.com/spf13/cobra"
 )
 
-
-
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "csnap",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
+	Short: "Configuration Snapshot",
+	Long: `CSNAP (Configuration Snapshot)
+is designed to capture various configuration details of a Linux system,
+specifically tailored for Red Hat (RHEL) and SUSE distributions.
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+It gathers over 40 configuration files that can prove valuable for pre and post-system reboots.
+Additionally, having a snapshot of these files is advantageous, especially if you are unfamiliar with the system you are working on.
+
+Configuration captured
+Hardware summary
+Active/inactive services
+Hosts information
+DNS configuration
+Device information
+Module information
+Network interfaces
+Kernel parameters
+Filesystem table
+... (and more)`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	// Run: func(cmd *cobra.Command, args []string) { },
@@ -47,5 +57,3 @@ func init() {
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
-
-
