@@ -23,7 +23,7 @@ Run the script as a superuser (root) to capture the system configuration.
 To create a configuration snapshot, execute the following command:
 
 ```
-sudo ./csnap.sh make
+sudo csnap make
 ```
 This will generate detailed logs in the specified directories.
 
@@ -31,5 +31,5 @@ This will generate detailed logs in the specified directories.
 To compare two snapshots, use the comparecsnap function in the script. Follow the on-screen instructions to select the snapshots you want to compare.
 
 ```
-./csnap.sh compare
+csnap compare
 ```

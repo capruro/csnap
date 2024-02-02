@@ -9,8 +9,22 @@ import (
 	"os"
 	"os/exec"
 	"os/user"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
+)
+
+// Config represents the configuration structure.
+type Config struct {
+	SnapshotsDir string `json:"snapshotsDir"`
+	FmtFile      string `json:"fmtFile"`
+}
+
+var (
+	config      Config
+	currentTime string
+	logFilePath string
+	hostname    string
 )
 
 // makeCmd represents the make command
@@ -35,14 +49,6 @@ func makeRun(cmd *cobra.Command, args []string) {
 	// Append the content of /etc/hosts to the log file
 	appendHostsContent()
 }
-
-// Config represents the configuration structure.
-type Config struct {
-	SnapshotsDir string `json:"snapshotsDir"`
-	FmtFile      string `json:"fmtFile"`
-}
-
-var config Config
 
 func loadConfig() {
 	file, err := os.Open("config.json")
@@ -101,7 +107,12 @@ func checkRoot() error {
 }
 
 func appendHostsContent() {
-	logFilePath := fmt.Sprintf("%s/%s", config.SnapshotsDir, config.FmtFile)
+	// Compose the file name with date and hostname
+	logFileName := fmt.Sprintf("%s.%s.txt", currentTime, hostname)
+
+	// Full path to the log file
+	logFilePath = filepath.Join(config.SnapshotsDir, logFileName)
+
 	cmd := exec.Command("cat", "/etc/hosts")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
