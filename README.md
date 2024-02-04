@@ -7,14 +7,14 @@ It gathers over 40 configuration files that can prove valuable for pre and post-
 
 ### Configuration captured
 - Hardware summary
-- Active/inactive services (chkconfig/systemctl)
+- Active/inactive services
 - Hosts information
 - DNS configuration
-- Device information (lspci)
-- Module information (lsmod)
-- Network interfaces (ifconfig/ip a)
-- Kernel parameters (sysctl)
-- Filesystem table (fstab)
+- Device information
+- Module information
+- Network interfaces
+- Kernel parameters
+- Filesystem table
 - ... (and more)
 
 ## Usage

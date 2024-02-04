@@ -4,27 +4,12 @@ Copyright © 2024 Capruro me@capruro.com
 package cmd
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
-	"os/exec"
 	"os/user"
-	"path/filepath"
+	"runtime"
 
 	"github.com/spf13/cobra"
-)
-
-// Config represents the configuration structure.
-type Config struct {
-	SnapshotsDir string `json:"snapshotsDir"`
-	FmtFile      string `json:"fmtFile"`
-}
-
-var (
-	config      Config
-	currentTime string
-	logFilePath string
-	hostname    string
 )
 
 // makeCmd represents the make command
@@ -35,39 +20,30 @@ var makeCmd = &cobra.Command{
 	Run:   makeRun,
 }
 
-func makeRun(cmd *cobra.Command, args []string) {
-	if err := checkRoot(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+func collectOSDetails() {
+	os := runtime.GOOS
+	arch := runtime.GOARCH
+
+	fmt.Printf("Operating System: %s\n", os)
+	fmt.Printf("Architecture: %s\n", arch)
+
+	switch os {
+	case "windows":
+		// Additional Windows-specific details
+		// You can use `os.Getenv("OS")` to get specific version information or use other relevant functions.
+		fmt.Println("Windows it's not supported yet!")
+	case "linux":
+		// Additional Linux-specific details
+		// You can use specific Linux commands or system calls to gather more information.
+		fmt.Println("Linux-specific details...")
+
+	case "darwin":
+		// Additional macOS-specific details
+		// You can use specific macOS commands or system calls to gather more information.
+		fmt.Println("macOS-specific details...")
+	default:
+		fmt.Println("Unknown operating system")
 	}
-
-	fmt.Println("make called")
-	// Add your make logic here
-	loadConfig()
-	testDirs()
-
-	// Append the content of /etc/hosts to the log file
-	appendHostsContent()
-}
-
-func loadConfig() {
-	file, err := os.Open("config.json")
-	if err != nil {
-		fmt.Println("[ERROR] Failed to open config file:", err)
-		os.Exit(1)
-	}
-	defer file.Close()
-
-	decoder := json.NewDecoder(file)
-	err = decoder.Decode(&config)
-	if err != nil {
-		fmt.Println("[ERROR] Failed to decode config file:", err)
-		os.Exit(1)
-	}
-}
-
-func testDirs() {
-	checkAndCreateDir("snapshots", config.SnapshotsDir)
 }
 
 func checkAndCreateDir(name, path string) {
@@ -89,10 +65,6 @@ func checkAndCreateDir(name, path string) {
 	}
 }
 
-func init() {
-	rootCmd.AddCommand(makeCmd)
-}
-
 func checkRoot() error {
 	currentUser, err := user.Current()
 	if err != nil {
@@ -106,29 +78,14 @@ func checkRoot() error {
 	return nil
 }
 
-func appendHostsContent() {
-	// Compose the file name with date and hostname
-	logFileName := fmt.Sprintf("%s.%s.txt", currentTime, hostname)
-
-	// Full path to the log file
-	logFilePath = filepath.Join(config.SnapshotsDir, logFileName)
-
-	cmd := exec.Command("cat", "/etc/hosts")
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		fmt.Printf("[ERROR] Failed to execute 'cat /etc/hosts': %v\n", err)
+func makeRun(cmd *cobra.Command, args []string) {
+	if err := checkRoot(); err != nil {
+		fmt.Println(err)
 		os.Exit(1)
 	}
+	collectOSDetails()
+}
 
-	f, err := os.OpenFile(logFilePath, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
-	if err != nil {
-		fmt.Printf("[ERROR] Failed to open log file: %v\n", err)
-		os.Exit(1)
-	}
-	defer f.Close()
-
-	if _, err := f.Write(out); err != nil {
-		fmt.Printf("[ERROR] Failed to write to log file: %v\n", err)
-		os.Exit(1)
-	}
+func init() {
+	rootCmd.AddCommand(makeCmd)
 }
